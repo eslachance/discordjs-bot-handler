@@ -23,11 +23,12 @@ class GuideBot extends Client {
     // client.config.token contains the bot's token
     // client.config.prefix contains the message prefix
 
-    // Aliases and commands are put in collections where they can be read from,
+    // Aliases, commands and slash commands are put in collections where they can be read from,
     // catalogued, listed, etc.
     this.commands = new Collection();
     this.aliases = new Collection();
-    
+    this.slashcmds = new Collection();
+
     this.owners = new Array();
 
     // Now we integrate the use of Evie's awesome Enhanced Map module, which
@@ -218,12 +219,23 @@ const init = async () => {
     if (response) client.logger.error(response);
   });
 
+  readdir("./slash", (err, files) => {
+    if (err) return console.error(err);
+    files.forEach(file => {
+      if (!file.endsWith(".js")) return;
+      const props = new (require(`./slash/${file}`))(client);
+      const commandName = file.split(".")[0];
+      client.logger.log(`Loading Slash command: ${commandName}. 👌`, "log");
+      // Now set the name of the command with it's properties.
+      client.slashcmds.set(props.commandData.name, props);
+    });
+  });
+
   // Then we load events, which will include our message and ready event.
   const evtFiles = await readdir("./events/");
-  client.logger.log(`Loading a total of ${evtFiles.length} events.`, "log");
   evtFiles.forEach(file => {
     const eventName = file.split(".")[0];
-    client.logger.log(`Loading Event: ${eventName}`);
+    client.logger.log(`Loading Event: ${eventName}. 👌`, "log");
     const event = new (require(`./events/${file}`))(client);
     // This line is awesome by the way. Just sayin'.
     client.on(eventName, (...args) => event.run(...args));

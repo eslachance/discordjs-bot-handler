@@ -29,8 +29,8 @@ class Eval extends Command {
       // sends evaled output as a file if it exceeds the maximum character limit
       // 6 graves, and 2 characters for "js"
       const MAX_CHARS = 3 + 2 + clean.length + 3;
-      if (MAX_CHARS > 2000) {
-        message.channel.send("Output exceeded 2000 characters. Sending as a file.", { files: [{ attachment: Buffer.from(clean), name: "output.txt" }] });
+      if (MAX_CHARS > 4000) {
+        message.channel.send("Output exceeded 4000 characters. Sending as a file.", { files: [{ attachment: Buffer.from(clean), name: "output.txt" }] });
       }
       message.channel.send(codeBlock("js", clean));
     } catch (err) {
